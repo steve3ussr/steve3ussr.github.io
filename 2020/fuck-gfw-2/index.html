@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" >
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="description" content="A Dreamer" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    v2ray白话文手把手最简单使用教程（二） |  樱桃虾的秘密花园
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="樱桃虾的秘密花园" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content on">
+      <section class="outer">
+  <article id="post-fuck-gfw-2" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  v2ray白话文手把手最简单使用教程（二）
+</h1>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/fuck-gfw-2/" class="article-date">
+  <time datetime="2020-04-10T15:00:02.000Z" itemprop="datePublished">2020-04-10</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.3k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">4 分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>​        本文是上一篇的延伸，技术上更高级一点；同样地，尽量少阐述原理，更多地写方法。</p>
+<p>​        写这篇文章的目的，在于帮助未来的我，或者更多人，突破封锁。</p>
+<p>​        本文基于233boy写的v2ray一键部署脚本、2dust写的v2ray客户端、Windows系统，只要能看懂，会英语，一小时内完成 CDN + Websocket + TLS 不成问题。</p>
+<p>​        <span id="more"></span></p>
+<p>​        （不会真有不会英语的龙鸣上GitHub吧？）</p>
+<h1 id="一、被墙了"><a href="#一、被墙了" class="headerlink" title="一、被墙了"></a>一、被墙了</h1><p>​        如果按照上一篇，使用TCP或mKCP，天天看油管P站还不被墙，那你挺牛逼，；如果你被墙了，那请继续~</p>
+<p>​        多数被墙并不是直接封IP，而是先封端口，所以Xshell连上服务器，修改端口还能挺一阵子——这也是被墙之后第一步要检查的，如果能ping通，SSH能登录那大概率是被封端口了，更改端口即可；如果ping不通，SSH连不上，大概率说明你的IP完了。</p>
+<p>​        为了避免被墙，就要动用目前最安全的配置之一：Websocket + TLS + CDN 。</p>
+<p>​        当然不建议一开始就这么做，别步子大了扯着蛋~~</p>
+<p>​        你被墙是因为你和一个IP大流量、长时间地通信，而且端口还很奇怪（不是80，443等），虽然你和VPS的通信是加密的，别人看不到内容，但是墙你这些理由足够了。</p>
+<p>​        为了避免被墙，应该再通过一个可信的大公司服务器中转一下；并且让流量看起来是正常的普通的流量（比如HTTPS流量）。</p>
+<h1 id="二、搞定域名"><a href="#二、搞定域名" class="headerlink" title="二、搞定域名"></a>二、搞定域名</h1><p>​        这一步是为了让你的流量指向一个真正的域名比如<a target="_blank" rel="noopener" href="http://www.vw.com/">www.vw.com</a> , 而不是一个IP地址。</p>
+<h2 id="2-1-买域名"><a href="#2-1-买域名" class="headerlink" title="2.1 买域名"></a>2.1 买域名</h2><p>​        我在godaddy上买的域名，官网很好找，就是网页响应可能慢点。域名第一年便宜，建议只买一年，到期了再买另一个；域名随便挑，几十块钱的有的是。</p>
+<p>​        注意域名是一个形如 1234.com的，不是<a target="_blank" rel="noopener" href="http://www.1234.com/">www.1234.com</a> 。</p>
+<p>​        （godaddy从付款到可以使用可能要等几分钟）</p>
+<p>​        （为了方便，以下假设你的域名是<strong>user.com</strong>）</p>
+<h2 id="2-2-正确解析"><a href="#2-2-正确解析" class="headerlink" title="2.2 正确解析"></a>2.2 正确解析</h2><p>​        如果你选择godaddy，那么godaddy挺好，自带了DNS服务。</p>
+<p>​        在DNS里，先把能删的几个都删掉，然后添加一个解析记录：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>主机</th>
+<th>指向</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>www</td>
+<td>你的VPS的IP</td>
+</tr>
+</tbody></table>
+<p>​        其他的不用管，至于什么是A记录也不用管；如果你不喜欢也可以不用www，www指的是<a target="_blank" rel="noopener" href="http://www.user.com/">www.user.com</a> ；你也可以改成4m3.user.com；或者填@，指的是user.com。</p>
+<p>​        为了方便，以下假设是www。</p>
+<p>​        添加完解析记录后，可能要等一会才能生效。</p>
+<p>​        为了检验是否生效，可在cmd里ping一下<a target="_blank" rel="noopener" href="http://www.user.com/">www.user.com</a> ，看看后面出现的IP是不是你的VPS。</p>
+<p>​        （如果不是，可能是你的电信运营商搞了DNS劫持，请自行百度如何改为手动配置DNS）</p>
+<p>​        如果是的话，那你的域名就搞定了。</p>
+<h1 id="三、搞定CDN"><a href="#三、搞定CDN" class="headerlink" title="三、搞定CDN"></a>三、搞定CDN</h1><p>​        CDN可以理解成是也是一个代理服务器，但是是国际大品牌，而且谷歌、苹果、微软可能也在用；如果你直接连接到一个IP，那就很危险；如果你先连接到了这个国际大品牌，中间人一看，也不好直接封国际大品牌的IP。</p>
+<h2 id="3-1-把域名托管给CDN"><a href="#3-1-把域名托管给CDN" class="headerlink" title="3.1  把域名托管给CDN"></a>3.1  把域名托管给CDN</h2><p>​        现在的免费CDN里最著名的就是Cloudflare了吧，虽然外号“减速云”，但是确实比较安全。</p>
+<p>​        注册Cloudflare（以下简称CF），添加一个域名，会让你把DNS改到CF——之前你的DNS由域名提供商Godaddy提供；CF提供两个DNS服务器，要到Godaddy里手动替换；替换成功后CF需要一段时间检查是否成功更改，可能半个小时左右；改好了之后CF会给你发邮件的。之后再去Godaddy检查DNS会发现DNS已经不由Godaddy托管了。</p>
+<h2 id="3-2-配置CDN"><a href="#3-2-配置CDN" class="headerlink" title="3.2 配置CDN"></a>3.2 配置CDN</h2><p>​        检查此时的解析记录，应该有一条上述的A记录；如果没有就手动添加。</p>
+<p>​        千万一定要注意！！！这时应该把后面的云朵点成灰色的！！！灰色代表只解析DNS，橘色代表中转全部流量。</p>
+<p>​        然后去看SSL/TLS面板，在概述里把SSL/TLS模式改为完全；在边缘证书里应有一个生效的TLS证书，并在下面始终使用HTTPS。</p>
+<h2 id="3-3-配置v2ray"><a href="#3-3-配置v2ray" class="headerlink" title="3.3 配置v2ray"></a>3.3 配置v2ray</h2><p>​        用Xshell登录VPS，更改v2ray传输协议为Websocket+TLS。中途会让你输入域名，你就输入<a target="_blank" rel="noopener" href="http://www.user.com/">www.user.com</a> ；如果这里失败了，v2ray也会提醒你是因为上一步里没有把云朵点灰。剩余的基本回车就行，网页分流可以打开，默认的是分流到<a target="_blank" rel="noopener" href="https://liyafly.com/">https://liyafly.com</a> ， 如果你愿意也可以改成<a target="_blank" rel="noopener" href="http://www.baidu.com/">www.baidu.com</a> ；</p>
+<p>​        把协议成功更改为ws+tls后，到CF那里把云朵点成橘色，然后就可以启动v2ray，Google一下试试看了~</p>
+<p>​        </p>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+        <div class="declare">
+          <ul class="post-copyright">
+            <li>
+              <i class="ri-copyright-line"></i>
+              <strong>版权声明： </strong>
+              本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+            </li>
+          </ul>
+        </div>
+        
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/fuck-gfw-2/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF/" rel="tag">技术</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/commit_timeline/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            更新记录
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/fuck-gfw-1/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">v2ray白话文手把手最简单使用教程（一）</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020-2021
+        steve3ussr
+      </li>
+      <li>
+        
+        Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <span>
+  <i>PV:<span id="busuanzi_value_page_pv"></span></i>
+  <i>UV:<span id="busuanzi_value_site_uv"></span></i>
+</span>
+        
+      </li>
+      
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ohmygirl_logo.svg" alt="樱桃虾的秘密花园"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/OMG/">오마이걸</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="https://weibo.com/u/6399559434">微博</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2020/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+      strings: ['찾았다,오마이걸！', '人间樱桃柳虾虾~~', '想要的都拥有，得不到的都释怀'],
+      startDelay: 0,
+      typeSpeed: 200,
+      loop: true,
+      backSpeed: 50,
+      showCursor: true
+    });
+  } catch (err) {
+  }
+
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+
+  
+<script src="/js/clickLove.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>
